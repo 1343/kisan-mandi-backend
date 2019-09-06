@@ -57,6 +57,7 @@ def get(request, prod_id=None):
             product = Product.objects.all()
         result = []
         for prod in product:
+            user = User.objects.get(id=prod.user_id)
             result.append({
                 "id": prod.id,
                 "name": prod.name,
@@ -67,6 +68,7 @@ def get(request, prod_id=None):
                 "location": prod.location,
                 "image": prod.image,
                 "user_id": prod.user_id,
+                "user_name": user.name,
                 "status": prod.status
             })
         return responses.success(result)
@@ -77,7 +79,7 @@ def get(request, prod_id=None):
 def patch(request, prod_id=None):
     if request.method == "PATCH":
         data = json.loads(request.body.decode('utf-8'))
-        if prod_id is not None and not prod_id == " ":
+        if prod_id is None and not prod_id == " ":
             return responses.invalid("Please provide id")
         prod = Product.objects.filter(id=prod_id)
         if not prod:
