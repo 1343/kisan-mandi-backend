@@ -12,4 +12,5 @@ class Product(BaseModel):
     latitude = models.DecimalField(max_digits=8, decimal_places=3, default=0.0)
     location = models.CharField(max_length=255)
     image = models.CharField(max_length=255)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, default='fresh')
