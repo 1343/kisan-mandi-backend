@@ -1,13 +1,3 @@
-import time
-
-import jwt as jwt
-from django.shortcuts import render
-from django.utils import timezone
-
-from farmer_app import settings
-from farmer_app.settings import JWT_EXPIRY_IN_MINUTES
-from user.models import UserLoginLogs
-
 
 def is_correct_type(check_type, data):
     """This method is to check the type of input data"""

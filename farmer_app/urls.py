@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 import user.views as user
 
@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^api/v1/login/', user.login),
     url(r'^api/v1/update-user/(?P<user_id>\d+)', user.update_user),
     url(r'^api/v1/user/?(?P<user_id>[0-9]*)$', user.get_user),
+    url(r'^api/v1/product', include('product.urls')),
 ]

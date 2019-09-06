@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from common import responses
 from product.models import Product
+from user.models import User
 
 
 @csrf_exempt
@@ -17,31 +18,35 @@ def route(request, prod_id=None):
     if request.method == 'PATCH':
         return patch(request, prod_id)
     if request.method == 'DELETE':
-        return delete(prod_id)
+        return delete(request, prod_id)
     return responses.invalid("Invalid method type")
 
 
 @csrf_exempt
 def post(request):
-    if request.method == "POST":
-        data = json.loads(request.body.decode('utf-8'))
-        prod = Product.objects.create(name=data["name"], description=data["description"],
-                                      product_type=data["product_type"],
-                                      longitude=data["longitude"], latitude=data["latitude"], location=data["location"],
-                                      image=data["image"], user_id=data["user_id"])
-        return responses.success({
-            "id": prod.id,
-            "name": prod.name,
-            "description": prod.description,
-            "product_type": prod.product_type,
-            "longitude": prod.longitude,
-            "latitude": prod.latitude,
-            "location": prod.location,
-            "image": prod.image,
-            "user_id": prod.user_id,
-            "status": prod.status
-        })
-    return responses.invalid("Invalid method type")
+    try:
+        if request.method == "POST":
+            data = json.loads(request.body.decode('utf-8'))
+            User.objects.get(id=data["user_id"])
+            prod = Product.objects.create(name=data["name"], description=data["description"],
+                                          product_type=data["product_type"],
+                                          longitude=data["longitude"], latitude=data["latitude"], location=data["location"],
+                                          image=data["image"], user_id=data["user_id"])
+            return responses.success({
+                "id": prod.id,
+                "name": prod.name,
+                "description": prod.description,
+                "product_type": prod.product_type,
+                "longitude": prod.longitude,
+                "latitude": prod.latitude,
+                "location": prod.location,
+                "image": prod.image,
+                "user_id": prod.user_id,
+                "status": prod.status
+            })
+        return responses.invalid("Invalid method type")
+    except User.DoesNotExist:
+        return responses.invalid("Invalid user id")
 
 
 def get(request, prod_id=None):
@@ -72,6 +77,8 @@ def get(request, prod_id=None):
 def patch(request, prod_id=None):
     if request.method == "PATCH":
         data = json.loads(request.body.decode('utf-8'))
+        if prod_id is not None and not prod_id == " ":
+            return responses.invalid("Please provide id")
         prod = Product.objects.filter(id=prod_id)
         if not prod:
             return responses.invalid("Invalid product id")

@@ -49,7 +49,7 @@ def update_user(request, user_id):
 
 def get_user(request, user_id=None):
     if request.method == "GET":
-        if user_id is not None and not user_id == "":
+        if user_id is not None and not user_id == " ":
             user = User.objects.filter(id=user_id).all()
         else:
             user = User.objects.all()
