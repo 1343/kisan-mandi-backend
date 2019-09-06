@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from common import responses
+from common import responses, views
 from product.models import Product
 from user.models import User
 
@@ -27,10 +27,18 @@ def post(request):
     try:
         if request.method == "POST":
             data = json.loads(request.body.decode('utf-8'))
+            errors = views.validate(data, {"name": "NNULL|TYPEstr", "description": "NNULL|TYPEstr",
+                                           "product_type": "NNULL|TYPEstr",
+                                           "latitude": "NNULL", "longitude": "NNULL",
+                                           "location": "NNULL|TYPEstr", "image": "NNULL|TYPEstr",
+                                           "user_id": "NNULL|TYPEint"})
+            if errors:
+                return responses.invalid(errors)
             User.objects.get(id=data["user_id"])
             prod = Product.objects.create(name=data["name"], description=data["description"],
                                           product_type=data["product_type"],
-                                          longitude=data["longitude"], latitude=data["latitude"], location=data["location"],
+                                          longitude=data["longitude"], latitude=data["latitude"],
+                                          location=data["location"],
                                           image=data["image"], user_id=data["user_id"])
             return responses.success({
                 "id": prod.id,
@@ -54,7 +62,11 @@ def get(request, prod_id=None):
         if prod_id is not None and not prod_id == "":
             product = Product.objects.filter(id=prod_id).all()
         else:
-            product = Product.objects.all()
+            created_by = request.GET.get("created_by", None)
+            if created_by is None or created_by == "":
+                product = Product.objects.all()
+            else:
+                product = Product.objects.filter(user_id=created_by).all()
         result = []
         for prod in product:
             user = User.objects.get(id=prod.user_id)

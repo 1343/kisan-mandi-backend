@@ -5,13 +5,16 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
-from common import responses
+from common import responses, views
 from user.models import User
 
 
 @csrf_exempt
 def login(request):
     data = json.loads(request.body.decode('utf-8'))
+    errors = views.validate(data, {"phone": "NNULL|TYPEstr"})
+    if errors:
+        return responses.invalid(errors)
     user = User.objects.filter(phone=data["phone"])
     if user:
         user = User.objects.get(phone=data["phone"])
@@ -31,6 +34,10 @@ def login(request):
 def update_user(request, user_id):
     if request.method == "PUT":
         data = json.loads(request.body.decode('utf-8'))
+        errors = views.validate(data, {"name": "NNULL|TYPEstr", "user_type": "NNULL|TYPEstr",
+                                       "latitude": "NNULL", "longitude": "NNULL"})
+        if errors:
+            return responses.invalid(errors)
         user = User.objects.filter(id=user_id).all()
         if not user:
             return responses.invalid("Invalid user id")
