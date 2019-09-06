@@ -1,0 +1,10 @@
+/venv
+*.pyc
+**/migrations/**
+!**/migrations/__init__.py
+.idea/*
+.vscode/*
+.DS_Store
+*.log
+
+*.env
