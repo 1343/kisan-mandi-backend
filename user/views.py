@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.gis.geos import Point
 from django.shortcuts import render
 
 # Create your views here.

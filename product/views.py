@@ -1,10 +1,5 @@
-import decimal
 import json
-import math
 
-from django.contrib.gis.geos import Point, GEOSGeometry
-from django.contrib.gis.measure import D
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from common import responses, views
