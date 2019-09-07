@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.shortcuts import render
 
 # Create your views here.
@@ -83,6 +84,6 @@ def get_user(request, user_id=None):
 
 def get_merchants(request):
     if request.method == "GET":
-        user = User.objects.filter(user_type="merchant").all()
+        user = User.objects.filter(Q(user_type="Trader") | Q(user_type="trader")).all()
         return responses.success(response_object(user))
     return responses.invalid("Invalid method type")
