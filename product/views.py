@@ -100,6 +100,7 @@ def response_object(products, prod_id=None):
             "price": prod.price,
             "user_id": prod.user_id,
             "user_name": user.name,
+            "phone": user.phone,
             "status": prod.status
         })
     if prod_id is None or prod_id == "":
