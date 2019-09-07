@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 import user.views as user
+import product.views as product
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +26,6 @@ urlpatterns = [
     url(r'^api/v1/update-user/(?P<user_id>\d+)', user.update_user),
     url(r'^api/v1/user/?(?P<user_id>[0-9]*)$', user.get_user),
     url(r'^api/v1/product', include('product.urls')),
+    url(r'^api/v1/add-product-type', product.add_product_type),
+    url(r'^api/v1/get-product-type', product.get_product_type),
 ]
