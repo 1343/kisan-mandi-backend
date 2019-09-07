@@ -45,10 +45,10 @@ def update_user(request, user_id):
                                                latitude=data["latitude"], longitude=data["longitude"])
         return responses.success({
             "id": user[0].id,
-            "name": user[0].name,
-            "user_type": user[0].user_type,
-            "latitude": user[0].latitude,
-            "longitude": user[0].longitude,
+            "name": data["name"],
+            "user_type": data["user_type"],
+            "latitude": data["latitude"],
+            "longitude": data["longitude"],
             "phone": user[0].phone
         })
     return responses.invalid("Invalid method type")
@@ -65,10 +65,10 @@ def response_object(users, user_id=None):
             "latitude": usr.latitude,
             "longitude": usr.longitude
         })
-    if user_id is None or user_id == "":
-        return result
-    else:
-        return result[0]
+    # if user_id is None or user_id == "":
+    return result
+    # else:
+    #     return result[0]
 
 
 def get_user(request, user_id=None):
@@ -78,4 +78,11 @@ def get_user(request, user_id=None):
         else:
             user = User.objects.all()
         return responses.success(response_object(user, user_id))
+    return responses.invalid("Invalid method type")
+
+
+def get_merchants(request):
+    if request.method == "GET":
+        user = User.objects.filter(user_type="merchant").all()
+        return responses.success(response_object(user))
     return responses.invalid("Invalid method type")

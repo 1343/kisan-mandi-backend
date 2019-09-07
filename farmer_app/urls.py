@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^api/v1/product', include('product.urls')),
     url(r'^api/v1/add-product-type', product.add_product_type),
     url(r'^api/v1/get-product-type', product.get_product_type),
+    url(r'^api/v1/get-all-merchants', user.get_merchants),
 ]

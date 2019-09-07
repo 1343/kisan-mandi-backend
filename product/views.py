@@ -1,4 +1,6 @@
+import decimal
 import json
+import math
 
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -104,6 +106,22 @@ def response_object(products, prod_id=None):
         return result[0]
 
 
+def distance(lat1, lon1, lat2, lon2):
+    radlat1 = decimal.Decimal(math.pi) * decimal.Decimal(lat1) / 180
+    radlat2 = decimal.Decimal(math.pi) * decimal.Decimal(lat2) / 180
+    theta = decimal.Decimal(lon1) - decimal.Decimal(lon2)
+    radtheta = decimal.Decimal(math.pi) * decimal.Decimal(theta) / 180
+    print(radlat1, radlat2, theta, radtheta)
+    dist = math.sin(radlat1) * math.sin(radlat2) + math.cos(radlat1) * math.cos(radlat2) * math.cos(radtheta)
+    if dist > 1:
+        dist = 1
+    dist = math.acos(dist)
+    dist = (dist * 180) / math.pi
+    dist = dist * 60 * 1.1515
+    dist = dist * 1.609344
+    return dist
+
+
 def get(request, prod_id=None):
     if request.method == "GET":
         if prod_id is not None and not prod_id == "":
@@ -111,7 +129,17 @@ def get(request, prod_id=None):
         else:
             created_by = request.GET.get("created_by", None)
             if created_by is None or created_by == "":
-                product = Product.objects.select_related('product_type').all()
+                current_lat = request.GET.get('latitude', None)
+                current_long = request.GET.get('longitude', None)
+                prod = Product.objects.select_related('product_type').all()
+                product = []
+                for p in prod:
+                    lat = p.latitude
+                    long = p.longitude
+                    print(lat, long)
+                    print(distance(lat, long, current_lat, current_long))
+                    if distance(lat, long, current_lat, current_long) <= 200:
+                        product.append(p)
             else:
                 product = Product.objects.select_related('product_type').filter(user_id=created_by).all()
         return responses.success(response_object(product, prod_id))
