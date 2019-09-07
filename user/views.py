@@ -54,21 +54,28 @@ def update_user(request, user_id):
     return responses.invalid("Invalid method type")
 
 
+def response_object(users, user_id=None):
+    result = []
+    for usr in users:
+        result.append({
+            "id": usr.id,
+            "name": usr.name,
+            "phone": usr.phone,
+            "user_type": usr.user_type,
+            "latitude": usr.latitude,
+            "longitude": usr.longitude
+        })
+    if user_id is None or user_id == "":
+        return result
+    else:
+        return result[0]
+
+
 def get_user(request, user_id=None):
     if request.method == "GET":
-        if user_id is not None and not user_id == " ":
+        if user_id is not None and not user_id == "":
             user = User.objects.filter(id=user_id).all()
         else:
             user = User.objects.all()
-        result = []
-        for usr in user:
-            result.append({
-                "id": usr.id,
-                "name": usr.name,
-                "phone": usr.phone,
-                "user_type": usr.user_type,
-                "latitude": usr.latitude,
-                "longitude": usr.longitude
-            })
-        return responses.success(result)
+        return responses.success(response_object(user, user_id))
     return responses.invalid("Invalid method type")

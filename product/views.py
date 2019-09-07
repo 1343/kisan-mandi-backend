@@ -14,7 +14,7 @@ def route(request, prod_id=None):
     if request.method == 'POST':
         return post(request)
     if request.method == 'GET':
-        return get(request)
+        return get(request, prod_id)
     if request.method == 'PATCH':
         return patch(request, prod_id)
     if request.method == 'DELETE':
@@ -80,6 +80,30 @@ def post(request):
         return responses.invalid("Invalid user id")
 
 
+def response_object(products, prod_id=None):
+    result = []
+    for prod in products:
+        user = User.objects.get(id=prod.user_id)
+        result.append({
+            "id": prod.id,
+            "name": prod.name,
+            "description": prod.description,
+            "product_type": prod.product_type.name,
+            "longitude": prod.longitude,
+            "latitude": prod.latitude,
+            "location": prod.location,
+            "image": prod.image,
+            "price": prod.price,
+            "user_id": prod.user_id,
+            "user_name": user.name,
+            "status": prod.status
+        })
+    if prod_id is None or prod_id == "":
+        return result
+    else:
+        return result[0]
+
+
 def get(request, prod_id=None):
     if request.method == "GET":
         if prod_id is not None and not prod_id == "":
@@ -90,24 +114,7 @@ def get(request, prod_id=None):
                 product = Product.objects.select_related('product_type').all()
             else:
                 product = Product.objects.select_related('product_type').filter(user_id=created_by).all()
-        result = []
-        for prod in product:
-            user = User.objects.get(id=prod.user_id)
-            result.append({
-                "id": prod.id,
-                "name": prod.name,
-                "description": prod.description,
-                "product_type": prod.product_type.name,
-                "longitude": prod.longitude,
-                "latitude": prod.latitude,
-                "location": prod.location,
-                "image": prod.image,
-                "price": prod.price,
-                "user_id": prod.user_id,
-                "user_name": user.name,
-                "status": prod.status
-            })
-        return responses.success(result)
+        return responses.success(response_object(product, prod_id))
     return responses.invalid("Invalid method type")
 
 
