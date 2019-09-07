@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'farmer_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'NAME': 'farmer_app_db',
         'USER': 'admin',
         'PASSWORD': 'system',

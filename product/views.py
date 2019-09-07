@@ -2,6 +2,8 @@ import decimal
 import json
 import math
 
+from django.contrib.gis.geos import Point, GEOSGeometry
+from django.contrib.gis.measure import D
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -113,9 +115,11 @@ def get(request, prod_id=None):
         else:
             created_by = request.GET.get("created_by", None)
             if created_by is None or created_by == "":
-                product = Product.objects.select_related('product_type').all()
+                product = Product.objects.select_related('product_type').filter(status="fresh").\
+                    order_by('-created_at').all()
             else:
-                product = Product.objects.select_related('product_type').filter(user_id=created_by).all()
+                product = Product.objects.select_related('product_type').\
+                    filter(user_id=created_by).order_by('-created_at').all()
         return responses.success(response_object(product, prod_id))
     return responses.invalid("Invalid method type")
 
